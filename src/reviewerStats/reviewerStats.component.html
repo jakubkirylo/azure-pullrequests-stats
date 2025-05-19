@@ -1,0 +1,16 @@
+<!-- TODO: provide data filtering by date and repo -->
+@if(loading()){
+<div class="spinner-container">
+    <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
+</div>
+} @else {
+<div class="chart-container">
+    <ngx-charts-bar-horizontal [results]="chartData" [scheme]="colorScheme" [xAxis]="true" [yAxis]="true"
+        [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true" xAxisLabel="Reviewer" yAxisLabel="Approvals"
+        [showDataLabel]="true" [wrapTicks]="false">
+    </ngx-charts-bar-horizontal>
+</div>
+
+}
+
+<!-- TODO: when row is clicked display list of PR accepted by given user -->

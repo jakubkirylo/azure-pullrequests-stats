@@ -2,7 +2,27 @@
   display: block;
 }
 
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.place-center {
+  place-self: center;
+}
+
 .chart-container {
   width: 100%;
   height: 1000px;
+}
+
+.wide-select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  justify-self: stretch;
 }

@@ -1,14 +1,51 @@
-<div class="filters">
-  <label>Repositories:</label>
-  <select multiple [(ngModel)]="selectedRepos">
-    <option *ngFor="let repo of repos" [value]="repo">{{ repo }}</option>
-  </select>
-  <label>From:</label>
-  <input type="date" [(ngModel)]="fromDate" />
-  <label>To:</label>
-  <input type="date" [(ngModel)]="toDate" />
-  <button (click)="loadStats()">Apply</button>
-</div>
+<mat-card appearance="outlined">
+  <mat-card-content
+    ><div class="filters">
+      <mat-form-field class="wide-select">
+        <mat-label>Repozytoria</mat-label>
+        <mat-select [(ngModel)]="selectedRepos" multiple>
+          <mat-option
+            (click)="$event.stopPropagation(); selectAllRepos()"
+            [value]="''"
+            [disabled]="selectedRepos.length === repos.length"
+          >
+            Zaznacz wszystkie
+          </mat-option>
+          <mat-option
+            (click)="$event.stopPropagation(); selectedRepos = []"
+            [value]="''"
+            [disabled]="selectedRepos.length === 0"
+          >
+            Odznacz wszystkie
+          </mat-option>
+          @for (repo of repos; track repo.id){
+          <mat-option [value]="repo.id">{{ repo.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="wide-select">
+        <mat-label>Podaj zakres dat</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input
+            matStartDate
+            placeholder="Data początkowa"
+            [(ngModel)]="fromDate"
+          />
+          <input matEndDate placeholder="Data końcowa" [(ngModel)]="toDate" />
+        </mat-date-range-input>
+        <mat-hint>DD/MM/YYYY – DD/MM/YYYY</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+      <button class="place-center" mat-flat-button (click)="loadStats()">
+        Filtruj
+      </button>
+    </div></mat-card-content
+  >
+</mat-card>
 
 @if(loading()){
 <div class="spinner-container">

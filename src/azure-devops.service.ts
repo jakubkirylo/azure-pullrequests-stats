@@ -35,44 +35,66 @@ export class AzureDevopsService {
       `&searchCriteria.queryTimeRangeType=closed` +
       `&searchCriteria.minTime=${encodeURIComponent(minTimeIso)}` +
       `&api-version=7.1-preview.1`;
-    return this.http.get<PullRequestsResponse>(url, { headers: this.getHeaders() });
+    return this.http.get<PullRequestsResponse>(url, {
+      headers: this.getHeaders(),
+    });
   }
 
-  getReviewers(
-    repo: string,
-    prId: number
-  ): Observable<ReviewersResponse> {
+  getReviewers(repo: string, prId: number): Observable<ReviewersResponse> {
     const url = `${this.baseUrl}/${this.project}/_apis/git/repositories/${repo}/pullRequests/${prId}/reviewers?api-version=7.1-preview.1`;
-    return this.http.get<ReviewersResponse>(url, { headers: this.getHeaders() });
+    return this.http.get<ReviewersResponse>(url, {
+      headers: this.getHeaders(),
+    });
   }
 
-  getRepositories(): Observable<string[]> {
+  getRepositories(): Observable<GitRepositoryResponse> {
     const url = `${this.baseUrl}/${this.project}/_apis/git/repositories?api-version=7.1`;
-    return this.http.get<{ value: { name: string }[] }>(url, { headers: this.getHeaders() })
-      .pipe(map(res => res.value.map(r => r.name)));
+    return this.http.get<GitRepositoryResponse>(url, {
+      headers: this.getHeaders(),
+    });
   }
 }
 
-// Strongly typed response for pull requests
 export interface PullRequest {
   pullRequestId: number;
   title: string;
   createdBy: { displayName: string };
   closedDate: string;
-  // Add more fields as needed
 }
 export interface PullRequestsResponse {
   value: PullRequest[];
   count: number;
 }
 
-// Strongly typed response for reviewers
 export interface Reviewer {
   displayName: string;
   vote: number;
-  // Add more fields as needed
 }
 export interface ReviewersResponse {
   value: Reviewer[];
   count: number;
+}
+
+export interface GitRepositoryResponse {
+  count: number;
+  value: GitRepository[];
+}
+
+export interface GitRepository {
+  id: string;
+  defaultBranch?: string;
+  name: string;
+  isDisabled?: boolean;
+  isFork?: boolean;
+  isInMaintenance?: boolean;
+  remoteUrl?: string;
+  sshUrl?: string;
+  webUrl?: string;
+  project: {
+    id: string;
+    name: string;
+    url: string;
+    state: string;
+    visibility: string;
+  };
 }

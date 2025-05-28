@@ -1,16 +1,50 @@
-<!-- TODO: provide data filtering by date and repo -->
+<div class="filters">
+  <label>Repositories:</label>
+  <select multiple [(ngModel)]="selectedRepos">
+    <option *ngFor="let repo of repos" [value]="repo">{{ repo }}</option>
+  </select>
+  <label>From:</label>
+  <input type="date" [(ngModel)]="fromDate" />
+  <label>To:</label>
+  <input type="date" [(ngModel)]="toDate" />
+  <button (click)="loadStats()">Apply</button>
+</div>
+
 @if(loading()){
 <div class="spinner-container">
-    <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
+  <mat-progress-spinner
+    mode="indeterminate"
+    diameter="48"
+  ></mat-progress-spinner>
 </div>
 } @else {
 <div class="chart-container">
-    <ngx-charts-bar-horizontal [results]="chartData" [scheme]="colorScheme" [xAxis]="true" [yAxis]="true"
-        [legend]="false" [showXAxisLabel]="true" [showYAxisLabel]="true" xAxisLabel="Reviewer" yAxisLabel="Approvals"
-        [showDataLabel]="true" [wrapTicks]="false">
-    </ngx-charts-bar-horizontal>
+  <ngx-charts-bar-horizontal
+    [results]="chartData"
+    [scheme]="colorScheme"
+    [xAxis]="true"
+    [yAxis]="true"
+    [legend]="false"
+    [showXAxisLabel]="true"
+    [showYAxisLabel]="true"
+    xAxisLabel="Reviewer"
+    yAxisLabel="Approvals"
+    [showDataLabel]="true"
+    [wrapTicks]="false"
+    (select)="onReviewerClick($event.name)"
+  >
+  </ngx-charts-bar-horizontal>
 </div>
-
 }
 
-<!-- TODO: when row is clicked display list of PR accepted by given user -->
+<div *ngIf="selectedReviewer">
+  <h3>PRs approved by {{ selectedReviewer }}</h3>
+  <button (click)="clearReviewer()">Close</button>
+  <ul>
+    <li *ngFor="let pr of reviewerPRs[selectedReviewer]">
+      #{{ pr.pullRequestId }} - {{ pr.title }} (by
+      {{ pr.createdBy.displayName }}) - Closed:
+      {{ pr.closedDate | date : "short" }}
+    </li>
+  </ul>
+</div>

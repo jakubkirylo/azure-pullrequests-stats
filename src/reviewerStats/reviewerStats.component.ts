@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   inject,
   OnInit,
@@ -59,6 +60,7 @@ import {
 })
 export class ReviewerStatsComponent implements OnInit {
   private readonly azureService = inject(AzureDevopsService);
+  private readonly _changeDetector = inject(ChangeDetectorRef);
 
   private readonly acceptedPrCode = 10; // Accepted PR vote code in Azure DevOps
   private readonly devTestPhrase = 'dev into test'; // PR name for merging dev into test
@@ -195,6 +197,8 @@ export class ReviewerStatsComponent implements OnInit {
 
   public clearReviewer(): void {
     this.selectedReviewer = null;
+    this._changeDetector.detectChanges();
+    this._changeDetector.markForCheck();
   }
 
   public selectAllRepos(): void {

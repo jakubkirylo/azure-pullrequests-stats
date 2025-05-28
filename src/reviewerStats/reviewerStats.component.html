@@ -58,37 +58,42 @@
   ></mat-progress-spinner>
 </div>
 } @else {
-<div class="chart-container">
-  <ngx-charts-bar-horizontal
-    [results]="chartData"
-    [scheme]="colorScheme"
-    [xAxis]="true"
-    [yAxis]="true"
-    [legend]="false"
-    [showXAxisLabel]="true"
-    [showYAxisLabel]="true"
-    xAxisLabel="Reviewer"
-    yAxisLabel="Approvals"
-    [showDataLabel]="true"
-    [wrapTicks]="false"
-    (select)="onReviewerClick($event.name)"
-  >
-  </ngx-charts-bar-horizontal>
-</div>
-} @if (selectedReviewer) {
-<div>
-  <h3>Pull requesty zaakceptowane przez: {{ selectedReviewer }}</h3>
-  <button (click)="clearReviewer()">Close</button>
-  <ul>
-    @for (pr of reviewerPRs[selectedReviewer]; track $index) {
-    <li>
-      <a [href]="getPrUrl(pr)" target="_blank" rel="noopener">
-        #{{ pr.pullRequestId }}
-      </a>
-      - {{ pr.title }} (by {{ pr.createdBy.displayName }}) - Closed:
-      {{ pr.closedDate | date : "short" }}
-    </li>
-    }
-  </ul>
+<div class="main-content @(selectedReviewer ? 'two-columns' : 'one-column')">
+  <div class="chart-container">
+    <ngx-charts-bar-horizontal
+      [results]="chartData"
+      [scheme]="colorScheme"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="false"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      xAxisLabel="Reviewer"
+      yAxisLabel="Approvals"
+      [showDataLabel]="true"
+      [wrapTicks]="false"
+      (select)="onReviewerClick($event.name)"
+    >
+    </ngx-charts-bar-horizontal>
+  </div>
+  @if (selectedReviewer) {
+  <div class="pr-list-panel">
+    <h3>Pull requesty zaakceptowane przez: {{ selectedReviewer }}</h3>
+    <button class="place-center" mat-flat-button (click)="clearReviewer()">
+      Zamknij
+    </button>
+    <ul>
+      @for (pr of reviewerPRs[selectedReviewer]; track $index) {
+      <li>
+        <a [href]="getPrUrl(pr)" target="_blank" rel="noopener">
+          #{{ pr.pullRequestId }}
+        </a>
+        - {{ pr.title }} (by {{ pr.createdBy.displayName }}) - Closed:
+        {{ pr.closedDate | date : "short" }}
+      </li>
+      }
+    </ul>
+  </div>
+  }
 </div>
 }

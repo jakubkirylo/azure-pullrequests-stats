@@ -26,17 +26,6 @@ export class AzureDevopsService {
     fromDate?: Date | null,
     toDate?: Date | null
   ): Observable<PullRequestsResponse> {
-    const now = toDate || new Date();
-    const minTime = fromDate || new Date(now);
-    const maxTime = toDate || new Date(now);
-
-    if (fromDate === undefined) {
-      minTime.setDate(now.getDate() - this.daysBack);
-    }
-    const minTimeIso = minTime.toISOString();
-    const maxTimeIso = maxTime.toISOString();
-    console.warn('minTimeIso', minTimeIso);
-    console.warn('maxTimeIso', maxTimeIso);
     const url = this.prepareUrlForGettingCompletedPRs(repo, fromDate, toDate);
     return this.http.get<PullRequestsResponse>(url, {
       headers: this.getHeaders(),

@@ -1,5 +1,7 @@
 :host {
-  display: block;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
 }
 
 .filters {
@@ -25,4 +27,11 @@
   min-width: 0;
   box-sizing: border-box;
   justify-self: stretch;
+}
+
+.spinner-container {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
 }

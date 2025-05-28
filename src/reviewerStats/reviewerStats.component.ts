@@ -38,6 +38,7 @@ import {
   sortReposCustomOrder,
   filterStatsByDevTest,
 } from './reviewerStats.helper';
+import { AppConfigService } from '../app/app-config.service';
 
 @Component({
   selector: 'app-reviewer-stats',
@@ -59,8 +60,9 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewerStatsComponent implements OnInit {
-  private readonly azureService = inject(AzureDevopsService);
+  private readonly _azureService = inject(AzureDevopsService);
   private readonly _changeDetector = inject(ChangeDetectorRef);
+  private readonly _appConfigService = inject(AppConfigService);
 
   private readonly acceptedPrCode = 10; // Accepted PR vote code in Azure DevOps
   private readonly devTestPhrase = 'dev into test'; // PR name for merging dev into test
@@ -89,7 +91,10 @@ export class ReviewerStatsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.azureService.getRepositories().subscribe((repos) => {
+    this._appConfigService.getConfig().subscribe((config) => {
+      console.warn('config', config);
+    });
+    this._azureService.getRepositories().subscribe((repos) => {
       this.repos = sortReposCustomOrder(repos.value) || [];
       this.selectAllRepos();
       this.loadStats();
@@ -103,7 +108,7 @@ export class ReviewerStatsComponent implements OnInit {
     );
     forkJoin(
       reposToQuery.map((repo) =>
-        this.azureService
+        this._azureService
           .getCompletedPRs(repo.name, this.fromDate, this.toDate)
           .pipe(
             map((res) => ({ repo, prs: res.value || [] })),
@@ -116,7 +121,7 @@ export class ReviewerStatsComponent implements OnInit {
     )
       .pipe(
         mergeMap((repoResults) =>
-          this.getAllPRsWithReviewers(repoResults, this.azureService)
+          this.getAllPRsWithReviewers(repoResults, this._azureService)
         ),
         map((allReviewers) =>
           this.calculateAcceptedPrsPerReviewer(allReviewers)

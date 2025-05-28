@@ -1,75 +1,33 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from './app/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AzureDevopsService {
   private readonly http = inject(HttpClient);
-
-  private readonly daysBack = 30; // Default number of days to look back for completed PRs. Should be configurable.
-
-  private baseUrl = environment.azureDevOps.baseUrl;
-  private pat = environment.azureDevOps.pat;
-  private project = environment.azureDevOps.project;
-
-  private getHeaders(): HttpHeaders {
-    const token = btoa(`:${this.pat}`);
-    return new HttpHeaders({
-      Authorization: `Basic ${token}`,
-    });
-  }
 
   public getCompletedPRs(
     repo: string,
     fromDate?: Date | null,
     toDate?: Date | null
   ): Observable<PullRequestsResponse> {
-    const url = this.prepareUrlForGettingCompletedPRs(repo, fromDate, toDate);
-    return this.http.get<PullRequestsResponse>(url, {
-      headers: this.getHeaders(),
-    });
-  }
-
-  private prepareUrlForGettingCompletedPRs(
-    repo: string,
-    fromDate?: Date | null,
-    toDate?: Date | null
-  ) {
-    const now = toDate || new Date();
-    const minTime = fromDate || new Date(now);
-    const maxTime = toDate || new Date(now);
-
-    if (fromDate === null) {
-      minTime.setDate(now.getDate() - this.daysBack);
-    }
-    const minTimeIso = minTime.toISOString();
-    const maxTimeIso = maxTime.toISOString();
-    const url =
-      `${this.baseUrl}/${this.project}/_apis/git/repositories/${repo}/pullrequests` +
-      `?searchCriteria.status=completed` +
-      `&searchCriteria.queryTimeRangeType=closed` +
-      `&searchCriteria.minTime=${encodeURIComponent(minTimeIso)}` +
-      `&searchCriteria.maxTime=${encodeURIComponent(maxTimeIso)}` +
-      `&api-version=7.1-preview.1`;
-    return url;
+    let url = `/api/GetCompletedPRs?repo=${encodeURIComponent(repo)}`;
+    if (fromDate) url += `&fromDate=${encodeURIComponent(fromDate.toISOString())}`;
+    if (toDate) url += `&toDate=${encodeURIComponent(toDate.toISOString())}`;
+    return this.http.get<PullRequestsResponse>(url);
   }
 
   public getReviewers(
     repo: string,
     prId: number
   ): Observable<ReviewersResponse> {
-    const url = `${this.baseUrl}/${this.project}/_apis/git/repositories/${repo}/pullRequests/${prId}/reviewers?api-version=7.1-preview.1`;
-    return this.http.get<ReviewersResponse>(url, {
-      headers: this.getHeaders(),
-    });
+    const url = `/api/GetReviewers?repo=${encodeURIComponent(repo)}&prId=${prId}`;
+    return this.http.get<ReviewersResponse>(url);
   }
 
   public getRepositories(): Observable<GitRepositoryResponse> {
-    const url = `${this.baseUrl}/${this.project}/_apis/git/repositories?api-version=7.1`;
-    return this.http.get<GitRepositoryResponse>(url, {
-      headers: this.getHeaders(),
-    });
+    const url = `/api/GetRepositories`;
+    return this.http.get<GitRepositoryResponse>(url);
   }
 }
 

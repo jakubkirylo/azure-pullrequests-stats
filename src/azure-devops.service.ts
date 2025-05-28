@@ -1,8 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from './app/environment';
-import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AzureDevopsService {
@@ -79,6 +78,7 @@ export interface PullRequest {
   title: string;
   createdBy: { displayName: string };
   closedDate: string;
+  repository: GitRepository;
 }
 export interface PullRequestsResponse {
   value: PullRequest[];

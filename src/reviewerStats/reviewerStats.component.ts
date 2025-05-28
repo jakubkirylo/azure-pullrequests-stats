@@ -32,7 +32,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
-import { colorScheme, sortReposCustomOrder } from './reviewerStats.helper';
+import {
+  colorScheme,
+  sortReposCustomOrder,
+  filterStatsByDevTest,
+} from './reviewerStats.helper';
 
 @Component({
   selector: 'app-reviewer-stats',
@@ -56,7 +60,8 @@ import { colorScheme, sortReposCustomOrder } from './reviewerStats.helper';
 export class ReviewerStatsComponent implements OnInit {
   private readonly azureService = inject(AzureDevopsService);
 
-  private acceptedPrCode = 10; // Accepted PR vote code in Azure DevOps
+  private readonly acceptedPrCode = 10; // Accepted PR vote code in Azure DevOps
+  private readonly devTestPhrase = 'dev into test'; // PR name for merging dev into test
 
   protected repos: GitRepository[] = [];
   protected selectedRepos: string[] = [];
@@ -68,9 +73,14 @@ export class ReviewerStatsComponent implements OnInit {
   protected selectedReviewer: string | null = null;
   protected loading = signal(false);
   protected colorScheme: Color = colorScheme;
+  protected includeDevTest: boolean = true;
 
   get chartData() {
-    return Object.entries(this.stats).map(([name, value]) => ({
+    let stats = this.stats;
+    if (!this.includeDevTest) {
+      stats = filterStatsByDevTest(this.reviewerPRs, this.devTestPhrase);
+    }
+    return Object.entries(stats).map(([name, value]) => ({
       name,
       value,
     }));
@@ -183,15 +193,16 @@ export class ReviewerStatsComponent implements OnInit {
     this.selectedReviewer = reviewer;
   }
 
-  clearReviewer() {
+  public clearReviewer(): void {
     this.selectedReviewer = null;
   }
 
-  selectAllRepos() {
+  public selectAllRepos(): void {
     this.selectedRepos = this.repos.map((r) => r.id);
   }
 
-  trackByRepoId(index: number, repo: GitRepository) {
-    return repo.id;
+  public getPrUrl(pr: PullRequest): string {
+    const repoName = pr.repository?.name;
+    return `https://dev.azure.com/troteclaser01/ProductionCenter/_git/${repoName}/pullrequest/${pr.pullRequestId}`;
   }
 }

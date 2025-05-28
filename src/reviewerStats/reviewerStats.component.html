@@ -43,6 +43,9 @@
       <button class="place-center" mat-flat-button (click)="loadStats()">
         Filtruj
       </button>
+      <mat-checkbox [(ngModel)]="includeDevTest">
+        Uwzględnij "dev into test"
+      </mat-checkbox>
     </div></mat-card-content
   >
 </mat-card>
@@ -72,16 +75,20 @@
   >
   </ngx-charts-bar-horizontal>
 </div>
-}
-
-<div *ngIf="selectedReviewer">
-  <h3>PRs approved by {{ selectedReviewer }}</h3>
+} @if (selectedReviewer) {
+<div>
+  <h3>Pull requesty zaakceptowane przez: {{ selectedReviewer }}</h3>
   <button (click)="clearReviewer()">Close</button>
   <ul>
-    <li *ngFor="let pr of reviewerPRs[selectedReviewer]">
-      #{{ pr.pullRequestId }} - {{ pr.title }} (by
-      {{ pr.createdBy.displayName }}) - Closed:
+    @for (pr of reviewerPRs[selectedReviewer]; track $index) {
+    <li>
+      <a [href]="getPrUrl(pr)" target="_blank" rel="noopener">
+        #{{ pr.pullRequestId }}
+      </a>
+      - {{ pr.title }} (by {{ pr.createdBy.displayName }}) - Closed:
       {{ pr.closedDate | date : "short" }}
     </li>
+    }
   </ul>
 </div>
+}

@@ -1,5 +1,5 @@
 import { Color, ScaleType } from '@swimlane/ngx-charts';
-import { GitRepository } from '../azure-devops.service';
+import { GitRepository, PullRequest } from '../azure-devops.service';
 
 export const colorScheme: Color = {
   name: 'customScheme',
@@ -9,6 +9,7 @@ export const colorScheme: Color = {
 };
 
 export function sortReposCustomOrder(repos: GitRepository[]): GitRepository[] {
+  // TODO JWK: should be configurable
   const customOrder = [
     'ProductionCenter.WebAPI',
     'ProductionCenter.Frontend',
@@ -24,4 +25,22 @@ export function sortReposCustomOrder(repos: GitRepository[]): GitRepository[] {
     if (bIdx !== -1) return 1;
     return a.name.localeCompare(b.name);
   });
+}
+
+export function filterStatsByDevTest(
+  reviewerPRs: Record<string, PullRequest[]>,
+  devTestPhrase: string
+): Record<string, number> {
+  const filteredStats: Record<string, number> = {};
+  for (const [reviewer, prs] of Object.entries(reviewerPRs)) {
+    const filteredPRs = prs.filter(
+      (pr) => !pr.title.toLowerCase().includes(devTestPhrase)
+    );
+    if (filteredPRs.length > 0) {
+      filteredStats[reviewer] = filteredPRs.length;
+    }
+  }
+  return Object.fromEntries(
+    Object.entries(filteredStats).sort(([, a], [, b]) => b - a)
+  );
 }

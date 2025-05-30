@@ -17,10 +17,14 @@ To Do:
 2. Implement some authorization to access the data OR
 3. Implement some data anonimization 
 4. Implement simple store to store data
-5. Make some hardcoded parameters configurable
-6. Move PAT out of solution
+5. AzureDevOpsServiceFunctions must be rewritten and optimized as they are AI generated and it's a mess
+6. ~~Make some hardcoded parameters configurable~~
+7. ~~Move PAT out of solution~~
 
 The app is hosted on Azure: {}
+![azure2](https://github.com/user-attachments/assets/53f9a5bf-b4aa-4a09-a344-7e41700abb48)
+![azure1](https://github.com/user-attachments/assets/0c594661-eba3-4a68-9276-343ea3ec7ec1)
+
 Continuous integration is handled by GitHub Actions.
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.6.
